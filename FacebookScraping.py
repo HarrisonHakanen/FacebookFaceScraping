@@ -20,6 +20,10 @@ raiz = "C:\\Users\\harri\\Documents\\Programacao\\Python\\FacebookFaces\\"
 pessoasCadastradas = raiz+"Pessoas\\"
 pessoasCadastradasFile = raiz+"PessoasCadastradas.txt"
 
+ultimoNome = "ultimoNome.txt"
+ultimaCidade = "ultimaCidade.txt"
+
+
 
 if not os.path.exists(pessoasCadastradas):
     os.mkdir(pessoasCadastradas)
@@ -47,12 +51,18 @@ contador = 0
 
 for nomesFile in listaNomesFile:
     
+    
+    
     listaNomes = open(nomesFile, "r",encoding="latin-1")
 
 
     nomes = listaNomes.readlines()
     
     for nome in nomes:
+        
+        file1 = open(ultimoNome, "w")            
+        file1.writelines(str(nome).strip())
+        file1.close()
                     
         
         for cidadesFile in listaCidadesFile: 
@@ -65,6 +75,11 @@ for nomesFile in listaNomesFile:
             
             
             for cidadePesquisa in cidadesParaPesquisar:
+                
+                
+                file1 = open(ultimaCidade, "w")            
+                file1.writelines(str(cidadePesquisa).strip())
+                file1.close()
             
                 nome = nome.strip()
                 cidadePesquisa = cidadePesquisa.strip()

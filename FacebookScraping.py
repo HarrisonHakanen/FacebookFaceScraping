@@ -16,7 +16,7 @@ driver.implicitly_wait(10)
 usr="facehbrasil01@gmail.com"
 pwd="eunaosei1997"
 
-raiz = "C:\\Users\\harri\\Documents\\Programacao\\Python\\FacebookFaces\\"
+raiz = "C:\\Users\\harri\\Documents\\GitHub\\FacebookFaceScraping\\"
 pessoasCadastradas = raiz+"Pessoas\\"
 pessoasCadastradasFile = raiz+"PessoasCadastradas.txt"
 
@@ -92,159 +92,165 @@ for nomesFile in listaNomesFile:
                 driver.get(pesquisaUrl)
                 time.sleep(4)
                 
-                
-                driver.find_element(By.XPATH,"//input[@aria-label='Cidade']").send_keys(cidadePesquisa);
-                
-                time.sleep(2)
-                
-                cidades = driver.find_elements(By.TAG_NAME, "li")
-                
-                entrouEmAlgumaCidade = False
-                
-                for cidade in cidades:
+                try:
                     
-                    try:
-                        
-                        if cidade.text == cidadePesquisa:
-                            entrouEmAlgumaCidade = True            
-                            cidade.click()
-                    except:
-                        print("Erro ao entrar na cidade")
-                        
-                if entrouEmAlgumaCidade:
-                
-                    try:
-                        
-                        achouFim = False
-                        htmlString = driver.page_source
+                    driver.find_element(By.XPATH,"//input[@aria-label='Cidade']").send_keys(cidadePesquisa);
                     
-                        while achouFim == False:
+                    time.sleep(2)
+                    
+                    
+                    
+                    
+                    cidades = driver.find_elements(By.TAG_NAME, "li")
+                    
+                    entrouEmAlgumaCidade = False
+                    
+                    for cidade in cidades:
+                        
+                        try:
                             
+                            if cidade.text == cidadePesquisa:
+                                entrouEmAlgumaCidade = True            
+                                cidade.click()
+                        except:
+                            print("Erro ao entrar na cidade")
                             
-                            if "Fim dos resultados" not in htmlString:
-                                driver.execute_script("window.scrollBy(0, arguments[0]);", 2000)
-                                htmlString = driver.page_source
-                                time.sleep(1)            
-                            else:
-                                achouFim = True
-                        
+                    if entrouEmAlgumaCidade:
+                    
+                        try:
                             
+                            achouFim = False
+                            htmlString = driver.page_source
                         
-                        divs = driver.find_elements(By.XPATH, "//a[@href]")
-                    
-                        
-                        
-                        listaDeAlbunsDePerfis = []
-                    
-                        for elem in divs:
-                               
-                            link = elem.get_attribute("href")
-                            if "profile" in link:    
-                                            
-                                linkPartes = link.split("&")
-                                
-                                linkIdPartes = linkPartes[0].split("id=")                        
-                                
-                                listaDeAlbunsDePerfis.append(linkPartes[0]+"&sk=photos_albums");            
+                            while achouFim == False:
                                 
                                 
-                        listaDeAlbunsDePerfis = list(dict.fromkeys(listaDeAlbunsDePerfis))
+                                if "Fim dos resultados" not in htmlString:
+                                    driver.execute_script("window.scrollBy(0, arguments[0]);", 2000)
+                                    htmlString = driver.page_source
+                                    time.sleep(1)            
+                                else:
+                                    achouFim = True
+                            
+                                
+                            
+                            divs = driver.find_elements(By.XPATH, "//a[@href]")
                         
-                    
-                        for album in listaDeAlbunsDePerfis:
                             
-                            idPessoa = album.split("id=")[1].split("&")[0]        
-                            path = pessoasCadastradas+str(idPessoa)
                             
-                            print("Analisando a pessoa:" +str(idPessoa))
-                            
-                            pessoaJaCadastrada = False
-                            
-                            if not os.path.isfile(pessoasCadastradasFile):
-                                
-                                file1 = open(pessoasCadastradasFile, "w")            
-                                file1.writelines(str(idPessoa))
-                                file1.close()
-                            
-                            else:
-                                
-                    
-                                file1 = open(pessoasCadastradasFile, 'r')
-                                Lines = file1.readlines()
-                                 
-                                count = 0
-                    
-                                for line in Lines:
-                                    count += 1
-                                    if line.strip() == str(idPessoa):
-                                        pessoaJaCadastrada = True
+                            listaDeAlbunsDePerfis = []
+                        
+                            for elem in divs:
+                                   
+                                link = elem.get_attribute("href")
+                                if "profile" in link:    
+                                                
+                                    linkPartes = link.split("&")
                                     
-                                file1.close()
+                                    linkIdPartes = linkPartes[0].split("id=")                        
+                                    
+                                    listaDeAlbunsDePerfis.append(linkPartes[0]+"&sk=photos_albums");            
+                                    
+                                    
+                            listaDeAlbunsDePerfis = list(dict.fromkeys(listaDeAlbunsDePerfis))
+                            
+                        
+                            for album in listaDeAlbunsDePerfis:
+                                
+                                idPessoa = album.split("id=")[1].split("&")[0]        
+                                path = pessoasCadastradas+str(idPessoa)
+                                
+                                print("Analisando a pessoa:" +str(idPessoa))
+                                
+                                pessoaJaCadastrada = False
+                                
+                                if not os.path.isfile(pessoasCadastradasFile):
+                                    
+                                    file1 = open(pessoasCadastradasFile, "w")            
+                                    file1.writelines(str(idPessoa))
+                                    file1.close()
+                                
+                                else:
+                                    
+                        
+                                    file1 = open(pessoasCadastradasFile, 'r')
+                                    Lines = file1.readlines()
+                                     
+                                    count = 0
+                        
+                                    for line in Lines:
+                                        count += 1
+                                        if line.strip() == str(idPessoa):
+                                            pessoaJaCadastrada = True
+                                        
+                                    file1.close()
+                                    
+                                    
+                                    if pessoaJaCadastrada == False:
+                                    
+                                        file1 = open(pessoasCadastradasFile, "a")  # append mode
+                                        file1.write(str("\n"+idPessoa))
+                                        file1.close()
+                                    
                                 
                                 
                                 if pessoaJaCadastrada == False:
                                 
-                                    file1 = open(pessoasCadastradasFile, "a")  # append mode
-                                    file1.write(str("\n"+idPessoa))
-                                    file1.close()
-                                
-                            
-                            
-                            if pessoaJaCadastrada == False:
-                            
-                                if not os.path.exists(path):
-                                    os.mkdir(path)
-                                
-                                try:
-                                    driver.get(album)
-                                    time.sleep(6)
+                                    if not os.path.exists(path):
+                                        os.mkdir(path)
                                     
-                                      
-                                    a_class = driver.find_elements(By.XPATH, "//a[@href]")
-                                    
-                                    
-                                    fotosDoPerfilLink = ""
-                                    for i in range(len(a_class)):
+                                    try:
+                                        driver.get(album)
+                                        time.sleep(6)
                                         
-                                        try:                        
-                                            if "Fotos do perfil" in a_class[i].text:
-                                                                    
-                                                fotosDoPerfilLink = a_class[i].get_attribute("href")
-                                                i = len(a_class)
-                                                
-                                        except:
-                                            print("")
+                                          
+                                        a_class = driver.find_elements(By.XPATH, "//a[@href]")
+                                        
+                                        
+                                        fotosDoPerfilLink = ""
+                                        for i in range(len(a_class)):
                                             
-                                    
-                                    if fotosDoPerfilLink != "":
+                                            try:                        
+                                                if "Fotos do perfil" in a_class[i].text:
                                                                         
-                                        try:
-                                            
-                                            driver.get(fotosDoPerfilLink)
-                                            time.sleep(6)
-                                            
-                                            a_fotos = driver.find_elements(By.TAG_NAME, "img")
-                                            
-                                            indexImagem = 0
-                                            
-                                            for a_foto in a_fotos:
-                                                                
-                                                img_url = a_foto.get_attribute("src")
-                                                img_data = requests.get(img_url).content
-                                                with open(path+"\\Foto"+str(indexImagem)+".jpg", 'wb') as handler:
+                                                    fotosDoPerfilLink = a_class[i].get_attribute("href")
+                                                    i = len(a_class)
                                                     
-                                                    handler.write(img_data)
+                                            except:
+                                                print("")
                                                 
-                                                indexImagem += 1
+                                        
+                                        if fotosDoPerfilLink != "":
+                                                                            
+                                            try:
                                                 
-                                        except:
-                                            print("Erro ao acessar o album de fotos do perfil: "+fotosDoPerfilLink)
-                                except:            
-                                    print("Erro ao acessar o album: "+album)        
-                    except:
-                        print("Erro ao acessar o nome: "+nome)
-                        
-                contador+=1
+                                                driver.get(fotosDoPerfilLink)
+                                                time.sleep(6)
+                                                
+                                                a_fotos = driver.find_elements(By.TAG_NAME, "img")
+                                                
+                                                indexImagem = 0
+                                                
+                                                for a_foto in a_fotos:
+                                                                    
+                                                    img_url = a_foto.get_attribute("src")
+                                                    img_data = requests.get(img_url).content
+                                                    with open(path+"\\Foto"+str(indexImagem)+".jpg", 'wb') as handler:
+                                                        
+                                                        handler.write(img_data)
+                                                    
+                                                    indexImagem += 1
+                                                    
+                                            except:
+                                                print("Erro ao acessar o album de fotos do perfil: "+fotosDoPerfilLink)
+                                    except:            
+                                        print("Erro ao acessar o album: "+album)        
+                        except:
+                            print("Erro ao acessar o nome: "+nome)
+                    
+                except:
+                    print("Label Cidade não encontrada")
+                    
             
             listaCidades.close()
             
